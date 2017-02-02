@@ -5,8 +5,12 @@ The Kompex SQLite Wrapper is an open source C++ wrapper library for SQLite.
 The Wrapper wraps the SQLite C-functions and can be used on Windows and Linux operating systems.
 It supports a wide range of SQLite functions and is up to date.
 
+INSTALLING
+==========
+`autoconf` - > `./configure` -> `make` -> `make install`
 
 *Why should I use this wrapper?!*
+==========
 
 - it is easy to use (see examples)
 - integral exception handling
