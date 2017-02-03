@@ -14,7 +14,7 @@
 							 \___x___/ (_)   \__,_)| ,__/ | ,__/  \____)(_)          
 							                       | |    | |                           
                    							       (_)    (_)               
-											       (c) 2008-2014 Sven Broeske
+											       (c) 2008-2015 Sven Broeske
 											      [e-mail: mail@svenbroeske.de]
 
  CHANGELOG
@@ -157,4 +157,14 @@
  - added int SQLiteDatabase::GetLookasideMemoryMissCountDueToSmallSlotSize(bool resetValue)
  - added int SQLiteDatabase::GetLookasideMemoryMissCountDueToFullMemory(bool resetValue)
  - updated sqlite to version 3.8.4.3
+
+
+ version 1.11.13 (20.09.2015)
+ - added SQLiteStatement::BindBlob64()
+ - added SQLiteStatement::BindString64()
+ - added SQLiteStatement::BindZeroBlob64()
+ - moved int64 and uint64 to Kompex namespace
+ - fixed a bug in SQLiteDatabase::TakeSnapshot() - in case of an error during the save process in SQLiteDatabase::SaveDatabaseFromMemoryToFile()
+   it was not possible to close the database properly (error message: unable to close due to unfinalized statements or unfinished backups)
+ - updated sqlite to version 3.8.11.1
 

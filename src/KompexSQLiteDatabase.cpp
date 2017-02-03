@@ -1,6 +1,6 @@
 /*
     This file is part of Kompex SQLite Wrapper.
-	Copyright (c) 2008-2014 Sven Broeske
+	Copyright (c) 2008-2015 Sven Broeske
 
     Kompex SQLite Wrapper is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -409,7 +409,15 @@ void SQLiteDatabase::TakeSnapshot(sqlite3 *destinationDatabase)
 	{
 		// -1 to copy the entire source database to the destination
 		if(sqlite3_backup_step(backup, -1) != SQLITE_DONE)
+		{
+			// save error message and error number - otherwise an error in sqlite3_backup_finish() could overwrite them
+			std::string errmsg = sqlite3_errmsg(destinationDatabase);
+			int errcode = sqlite3_errcode(destinationDatabase);
+			// there must be exactly one call to sqlite3_backup_finish() for each successful call to sqlite3_backup_init()
+			sqlite3_backup_finish(backup);
 			KOMPEX_EXCEPT(sqlite3_errmsg(destinationDatabase), sqlite3_errcode(destinationDatabase));
+		}
+
 		// clean up resources allocated by sqlite3_backup_init()
 		if(sqlite3_backup_finish(backup) != SQLITE_OK)
 			KOMPEX_EXCEPT(sqlite3_errmsg(destinationDatabase), sqlite3_errcode(destinationDatabase));

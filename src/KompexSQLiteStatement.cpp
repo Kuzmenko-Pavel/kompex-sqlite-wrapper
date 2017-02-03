@@ -1,6 +1,6 @@
 /*
     This file is part of Kompex SQLite Wrapper.
-	Copyright (c) 2008-2014 Sven Broeske
+	Copyright (c) 2008-2015 Sven Broeske
 
     Kompex SQLite Wrapper is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -518,14 +518,30 @@ void SQLiteStatement::BindBool(int column, bool value) const
 
 void SQLiteStatement::BindString(int column, const std::string &string) const
 {
+	// SQLITE_TRANSIENT: SQLite makes its own private copy of the data immediately, before the sqlite3_bind_*() routine returns
 	if(sqlite3_bind_text(mStatement, column, string.c_str(), string.length(), SQLITE_TRANSIENT) != SQLITE_OK)
 		KOMPEX_EXCEPT(sqlite3_errmsg(mDatabase->GetDatabaseHandle()), sqlite3_errcode(mDatabase->GetDatabaseHandle()));
 }
 
 void SQLiteStatement::BindString16(int column, const wchar_t *string) const
 {
+	// SQLITE_TRANSIENT: SQLite makes its own private copy of the data immediately, before the sqlite3_bind_*() routine returns
 	if(sqlite3_bind_text16(mStatement, column, string, -1, SQLITE_TRANSIENT) != SQLITE_OK)
 		KOMPEX_EXCEPT(sqlite3_errmsg(mDatabase->GetDatabaseHandle()), sqlite3_errcode(mDatabase->GetDatabaseHandle()));
+}
+
+void SQLiteStatement::BindString64(int column, const char *string, uint64 byteLength, ENCODING encoding) const
+{
+	// SQLITE_TRANSIENT: SQLite makes its own private copy of the data immediately, before the sqlite3_bind_*() routine returns
+	switch(sqlite3_bind_text64(mStatement, column, string, byteLength, SQLITE_TRANSIENT, encoding))
+	{
+		case SQLITE_OK:
+			break;
+		case SQLITE_TOOBIG:
+			KOMPEX_EXCEPT("SQLITE_TOOBIG - string was larger than stated in byteLength or exceeded the default maximum length", -1);
+		default:
+			KOMPEX_EXCEPT(sqlite3_errmsg(mDatabase->GetDatabaseHandle()), sqlite3_errcode(mDatabase->GetDatabaseHandle()));
+	}
 }
 
 void SQLiteStatement::BindDouble(int column, double value) const
@@ -552,9 +568,21 @@ void SQLiteStatement::BindBlob(int column, const void* data, int numberOfBytes) 
 		KOMPEX_EXCEPT(sqlite3_errmsg(mDatabase->GetDatabaseHandle()), sqlite3_errcode(mDatabase->GetDatabaseHandle()));
 }
 
+void SQLiteStatement::BindBlob64(int column, const void* data, uint64 numberOfBytes) const
+{
+	if(sqlite3_bind_blob64(mStatement, column, data, numberOfBytes, SQLITE_TRANSIENT) != SQLITE_OK)
+		KOMPEX_EXCEPT(sqlite3_errmsg(mDatabase->GetDatabaseHandle()), sqlite3_errcode(mDatabase->GetDatabaseHandle()));
+}
+
 void SQLiteStatement::BindZeroBlob(int column, int length) const
 {
 	if(sqlite3_bind_zeroblob(mStatement, column, length) != SQLITE_OK)
+		KOMPEX_EXCEPT(sqlite3_errmsg(mDatabase->GetDatabaseHandle()), sqlite3_errcode(mDatabase->GetDatabaseHandle()));
+}
+
+void SQLiteStatement::BindZeroBlob64(int column, uint64 length) const
+{
+	if(sqlite3_bind_zeroblob64(mStatement, column, length) != SQLITE_OK)
 		KOMPEX_EXCEPT(sqlite3_errmsg(mDatabase->GetDatabaseHandle()), sqlite3_errcode(mDatabase->GetDatabaseHandle()));
 }
 

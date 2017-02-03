@@ -1,6 +1,6 @@
 /*
     This file is part of Kompex SQLite Wrapper.
-	Copyright (c) 2008-2014 Sven Broeske
+	Copyright (c) 2008-2015 Sven Broeske
 
     Kompex SQLite Wrapper is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -29,6 +29,15 @@
 namespace Kompex
 {	
 	class SQLiteDatabase;
+
+	enum ENCODING
+	{
+		UTF8 = 1,
+		UTF16LE = 2,
+		UTF16BE = 3,
+		UTF16 = 4,
+		UTF16_ALIGNED = 8
+	};
 
 	//! Execution of SQL statements and result processing.
 	class _SQLiteWrapperExport SQLiteStatement
@@ -339,6 +348,13 @@ namespace Kompex
 		//! @param column		Column, in which the data should be inserted
 		//! @param string		UTF-16 string which should be inserted in the indicated column
 		void BindString16(int column, const wchar_t *string) const;
+		//! Overrides prior binding on the same parameter with an UTF8, UTF16LE, UTF16BE, UTF16 or UTF16_ALIGNED string.\n
+		//! You must call Sql() one time, before you can use Bind..() methods!
+		//! @param column		Column, in which the data should be inserted
+		//! @param string		UTF8, UTF16LE, UTF16BE, UTF16 or UTF16_ALIGNED string which should be inserted in the indicated column
+		//! @param byteLength	Size of the string in bytes.
+		//! @param encoding		Kompex::UTF8, Kompex::UTF16LE, Kompex::UTF16BE, Kompex::UTF16 (native byte order) or Kompex::UTF16_ALIGNED (sqlite3_create_collation only)
+		void BindString64(int column, const char *string, uint64 byteLength, ENCODING encoding) const;
 		//! Overrides prior binding on the same parameter with a double value.\n
 		//! You must call Sql() one time, before you can use Bind..() methods!
 		//! @param column		Column, in which the data should be inserted
@@ -363,11 +379,28 @@ namespace Kompex
 		//!							Negative numberOfBytes means, that the length of the string is the number of\n
 		//!							bytes up to the first zero terminator.
 		void BindBlob(int column, const void* data, int numberOfBytes = -1) const;
+		//! Overrides prior binding on the same parameter with a BLOB.\n
+		//! You must call Sql() one time, before you can use Bind..() methods!
+		//! @param column			Column, in which the data should be inserted
+		//! @param data				BLOB data which should inserted in the indicated column
+		//! @param numberOfBytes	The size of the second parameter (const void *data) in bytes.\n
+		//!							In contrast to BindBlob() this method supports a 64-bit length.\n
+		//!							Please pay attention, that numberOfBytes is not the number of characters!
+		//!							Default: -1.\n
+		//!							Negative numberOfBytes means, that the length of the string is the number of\n
+		//!							bytes up to the first zero terminator.
+		void BindBlob64(int column, const void* data, uint64 numberOfBytes = -1) const;
 		//! Overrides prior binding on the same parameter with a blob that is filled with zeroes.\n
 		//! You must call Sql() one time, before you can use Bind..() methods!
 		//! @param column		Column, in which the data should be inserted
 		//! @param length		length of BLOB, which is filled with zeroes
 		void BindZeroBlob(int column, int length) const;
+		//! Overrides prior binding on the same parameter with a blob that is filled with zeroes.\n
+		//! You must call Sql() one time, before you can use Bind..() methods!
+		//! @param column		Column, in which the data should be inserted
+		//! @param length		Length of BLOB, which is filled with zeroes.\n
+		//!						In contrast to BindZeroBlob() this method supports a 64-bit length.\n
+		void BindZeroBlob64(int column, uint64 length) const;
 
 		//! Executes a prepared statement and doesn't clean-up so that you can reuse the prepared statement.\n
 		//! You must first call Sql() and Bind..() methods!\n
