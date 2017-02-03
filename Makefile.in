@@ -36,7 +36,11 @@ RANLIB = ranlib
 
 PRODUCT_NAME=@PACKAGE_NAME@
 
-all: static shared
+EXFILES  = $(shell echo examples/*.cpp)
+EXAMPLES = $(EXFILES:.cpp=)
+
+
+all: static shared $(EXAMPLES)
 
 clean:
 	$(RM) -r ${builddir}
@@ -50,6 +54,9 @@ static:
 
 shared:
 	$(MAKE) -f Makefile-shared.mk CONF=shared .build-conf
+
+$(EXAMPLES): $(EXFILES)
+	$(CXX) $(CPPFLAGS) $(LDFLAGS) -o $@ $@.cpp -I${includedir} -L ${prelibdir} -l${PRODUCT_NAME}
 
 install: doc
 	$(MKDIR) -p $(libdir)
