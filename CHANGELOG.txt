@@ -168,3 +168,5 @@
    it was not possible to close the database properly (error message: unable to close due to unfinalized statements or unfinished backups)
  - updated sqlite to version 3.8.11.1
 
+ version 1.11.13-1 (03.02.2017)
+ - updated sqlite to version 3.16.2

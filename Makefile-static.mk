@@ -12,10 +12,10 @@ OBJS= \
 	${objsdir}/sqlite3.o
 
 # C Compiler Flags
-CFLAGS+= -MMD -MP
+CFLAGS+= -Os -Wall -MMD -MP
 
 # CC Compiler Flags
-CPPFLAGS+= -I${includedir} -MMD -MP
+CPPFLAGS+= -Os -Wall -I${includedir} -MMD -MP
 
 # Link Libraries and Options
 LDLIBSOPTIONS=
@@ -43,5 +43,5 @@ ${objsdir}/KompexSQLiteDatabase.o: ${srcdir}/KompexSQLiteDatabase.cpp
 	$(COMPILE.cc) -MF $@.d -o $@ $^
 
 ${objsdir}/sqlite3.o: ${srcdir}/sqlite3.c 
-	$(COMPILE.c) ${CFLAGS} -MF $@.d -o $@ $^
+	$(COMPILE.c) ${CFLAGS} ${SQLITE_OPTION} -MF $@.d -o $@ $^
 
