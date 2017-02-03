@@ -12,13 +12,13 @@ OBJS= \
 	${objsdir}/sqlite3.o
 
 # C Compiler Flags
-CFLAGS+= -fPIC -MMD -MP
+CFLAGS+= -fpic -MMD -MP
 
 # CC Compiler Flags
 CPPFLAGS+= -DKOMPEX_SQLITEWRAPPER_EXPORT -DKOMPEX_SQLITEWRAPPER_DYN -fPIC -MMD -MP -I${includedir}
 
 # Link Libraries and Options
-LDLIBSOPTIONS= -shared -fPIC
+LDLIBSOPTIONS= -shared -fpic
 
 # Build Targets
 .build-conf: .pre-build ${prelibdir}/lib${PRODUCT_NAME}.so
@@ -29,7 +29,7 @@ LDLIBSOPTIONS= -shared -fPIC
 	$(RM) ${objsdir}/*.d
 
 ${prelibdir}/lib${PRODUCT_NAME}.so: ${OBJS}
-	${LINK.cc} -o ${prelibdir}/lib${PRODUCT_NAME}.so ${OBJS} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ${prelibdir}/lib${PRODUCT_NAME}.so ${OBJS} ${LDLIBSOPTIONS} ${LIBS} 
 
 ${objsdir}/KompexSQLiteBlob.o: ${srcdir}/KompexSQLiteBlob.cpp 
 	$(COMPILE.cc) ${CXXFLAGS} -MF $@.d -o $@ $^
